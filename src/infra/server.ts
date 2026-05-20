@@ -8,12 +8,15 @@ import { registerRoutes } from './routes'
 export function createApp() {
   const app = express()
 
+  const corsOrigin = process.env.CORS_ORIGIN ?? 'http://localhost:3000'
+  console.log('[CORS] Origin configurado:', corsOrigin)
+
   app.options('*', cors({
-    origin: process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+    origin: corsOrigin,
     credentials: true
   }))
 
-  app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:3000', credentials: true }))
+  app.use(cors({ origin: corsOrigin, credentials: true }))
   app.use(express.json())
   app.use(cookieParser())
 
