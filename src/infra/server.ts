@@ -12,7 +12,7 @@ export function createApp() {
 
   // CORS: libre para debug
   app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Origin', 'https://klikeo.pro')
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
 
@@ -43,9 +43,7 @@ async function main() {
   })
 }
 
-if (require.main === module) {
-  main().catch((err) => {
-    console.error('Fatal error:', err)
-    process.exit(1)
-  })
-}
+main().catch((err) => {
+  console.error('Fatal error:', err)
+  process.exit(1)
+})
