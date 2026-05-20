@@ -9,7 +9,6 @@ node_modules/
 .pnp.js
 
 # Build
-dist/
 build/
 
 # Logs
