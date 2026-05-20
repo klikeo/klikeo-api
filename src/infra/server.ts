@@ -1,6 +1,5 @@
 import 'dotenv/config'
 import express from 'express'
-import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { connectDB } from './db'
 import { registerRoutes } from './routes'
@@ -11,21 +10,19 @@ export function createApp() {
   const corsOrigin = process.env.CORS_ORIGIN ?? 'http://localhost:3000'
   console.log('[CORS] Origin configurado:', corsOrigin)
 
-  app.options('*', cors({
-    origin: corsOrigin,
-    credentials: true
-  }))
+  // CORS: permitir preflight y requests con credentials
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', corsOrigin)
+    res.header('Access-Control-Allow-Credentials', 'true')
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
 
-  app.use(cors({ origin: corsOrigin, credentials: true }))
-
-  // Middleware para asegurar headers CORS en TODAS las respuestas (incluyendo errores)
-  app.use((_req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', corsOrigin)
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(200)
+    }
     next()
   })
+
   app.use(express.json())
   app.use(cookieParser())
 
