@@ -8,6 +8,11 @@ import { registerRoutes } from './routes'
 export function createApp() {
   const app = express()
 
+  app.options('*', cors({
+    origin: process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+    credentials: true
+  }))
+
   app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:3000', credentials: true }))
   app.use(express.json())
   app.use(cookieParser())
