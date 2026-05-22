@@ -1,11 +1,11 @@
-import { ChatSessionRepository } from "@/repositories/ChatSessionRepository"
-import { NegocioRepository } from "@/repositories/NegocioRepository"
-import { DeepSeekService } from "@/services/DeepSeekService"
+import { ChatSessionRepository } from "../repositories/ChatSessionRepository"
+import { NegocioRepository } from "../repositories/NegocioRepository"
+import { DeepSeekService } from "../services/DeepSeekService"
 import {
   WhatsAppService,
   WhatsAppWebhookPayload,
-} from "@/services/WhatsAppService"
-import { ProcessWhatsAppMessageUseCase } from "@/use-cases/chat/ProcessWhatsAppMessageUseCase"
+} from "../services/WhatsAppService"
+import { ProcessWhatsAppMessageUseCase } from "../use-cases/chat/ProcessWhatsAppMessageUseCase"
 import { Request, Response } from "express"
 
 const whatsAppService = new WhatsAppService()

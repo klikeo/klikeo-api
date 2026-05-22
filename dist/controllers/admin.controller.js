@@ -1,15 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const UsuarioRepository_1 = require("@/repositories/UsuarioRepository");
-const authenticate_1 = require("@/middlewares/authenticate");
-const router = (0, express_1.Router)();
+exports.deleteUserByIdController = exports.updateUserByIdController = exports.getUserByIdController = exports.getUsersController = void 0;
+const UsuarioRepository_1 = require("../repositories/UsuarioRepository");
 const usuarioRepo = new UsuarioRepository_1.UsuarioRepository();
 // GET /api/admin/users — admin only
-router.get('/users', authenticate_1.authenticate, async (req, res) => {
+const getUsersController = async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
-            res.status(403).json({ error: 'Solo administradores' });
+        if (req.user.role !== "admin") {
+            res.status(403).json({ error: "Solo administradores" });
             return;
         }
         const page = req.query.page ? parseInt(req.query.page) : 1;
@@ -17,7 +15,7 @@ router.get('/users', authenticate_1.authenticate, async (req, res) => {
         const search = req.query.search;
         const { data: usuarios, total } = await usuarioRepo.list(page, limit, search);
         res.json({
-            data: usuarios.map(u => ({
+            data: usuarios.map((u) => ({
                 id: u.id,
                 email: u.email,
                 name: u.name,
@@ -31,19 +29,20 @@ router.get('/users', authenticate_1.authenticate, async (req, res) => {
         });
     }
     catch {
-        res.status(500).json({ error: 'Error interno' });
+        res.status(500).json({ error: "Error interno" });
     }
-});
+};
+exports.getUsersController = getUsersController;
 // GET /api/admin/users/:id — admin only
-router.get('/users/:id', authenticate_1.authenticate, async (req, res) => {
+const getUserByIdController = async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
-            res.status(403).json({ error: 'Solo administradores' });
+        if (req.user.role !== "admin") {
+            res.status(403).json({ error: "Solo administradores" });
             return;
         }
         const usuario = await usuarioRepo.findById(req.params.id);
         if (!usuario) {
-            res.status(404).json({ error: 'Usuario no encontrado' });
+            res.status(404).json({ error: "Usuario no encontrado" });
             return;
         }
         res.json({
@@ -56,24 +55,25 @@ router.get('/users/:id', authenticate_1.authenticate, async (req, res) => {
         });
     }
     catch {
-        res.status(500).json({ error: 'Error interno' });
+        res.status(500).json({ error: "Error interno" });
     }
-});
+};
+exports.getUserByIdController = getUserByIdController;
 // PUT /api/admin/users/:id — admin only
-router.put('/users/:id', authenticate_1.authenticate, async (req, res) => {
+const updateUserByIdController = async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
-            res.status(403).json({ error: 'Solo administradores' });
+        if (req.user.role !== "admin") {
+            res.status(403).json({ error: "Solo administradores" });
             return;
         }
         const { name, role } = req.body;
-        if (role && !['admin', 'owner'].includes(role)) {
-            res.status(400).json({ error: 'Rol inválido' });
+        if (role && !["admin", "owner"].includes(role)) {
+            res.status(400).json({ error: "Rol inválido" });
             return;
         }
         const updated = await usuarioRepo.update(req.params.id, { name, role });
         if (!updated) {
-            res.status(404).json({ error: 'Usuario no encontrado' });
+            res.status(404).json({ error: "Usuario no encontrado" });
             return;
         }
         res.json({
@@ -85,30 +85,31 @@ router.put('/users/:id', authenticate_1.authenticate, async (req, res) => {
         });
     }
     catch {
-        res.status(500).json({ error: 'Error interno' });
+        res.status(500).json({ error: "Error interno" });
     }
-});
+};
+exports.updateUserByIdController = updateUserByIdController;
 // DELETE /api/admin/users/:id — admin only
-router.delete('/users/:id', authenticate_1.authenticate, async (req, res) => {
+const deleteUserByIdController = async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
-            res.status(403).json({ error: 'Solo administradores' });
+        if (req.user.role !== "admin") {
+            res.status(403).json({ error: "Solo administradores" });
             return;
         }
         // No permitir que un admin se elimine a sí mismo
         if (req.params.id === req.user.userId) {
-            res.status(400).json({ error: 'No puedes eliminarte a ti mismo' });
+            res.status(400).json({ error: "No puedes eliminarte a ti mismo" });
             return;
         }
         const deleted = await usuarioRepo.delete(req.params.id);
         if (!deleted) {
-            res.status(404).json({ error: 'Usuario no encontrado' });
+            res.status(404).json({ error: "Usuario no encontrado" });
             return;
         }
-        res.json({ message: 'Usuario eliminado exitosamente' });
+        res.json({ message: "Usuario eliminado exitosamente" });
     }
     catch {
-        res.status(500).json({ error: 'Error interno' });
+        res.status(500).json({ error: "Error interno" });
     }
-});
-exports.default = router;
+};
+exports.deleteUserByIdController = deleteUserByIdController;

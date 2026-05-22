@@ -6,6 +6,7 @@ import { connectDB } from "./db"
 import authRouter from "../routes/auth.routes"
 import bussinesRouter from "../routes/negocios.routes"
 import webhooksRouter from "../routes/webhhoks.routes"
+import adminRouter from "../routes/admin.routes"
 import cors from "cors"
 
 export function createApp() {
@@ -38,7 +39,7 @@ export function createApp() {
   app.use("/api/auth", authRouter)
   app.use("/api/negocios", bussinesRouter)
   app.use("/api/webhooks", webhooksRouter)
-  // app.use('/api/admin', adminRouter)
+  app.use("/api/admin", adminRouter)
 
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() })

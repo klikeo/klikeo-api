@@ -1,7 +1,7 @@
-import { BUSINESS_CATEGORIES } from '@/constants/categories'
-import type { Negocio } from '@/types/Negocio'
-import type { Usuario } from '@/types/Usuario'
-import type { ChatSession } from '@/types/ChatSession'
+import { BUSINESS_CATEGORIES } from '../../src/constants/categories'
+import type { Negocio } from '../../src/types/Negocio'
+import type { Usuario } from '../../src/types/Usuario'
+import type { ChatSession } from '../../src/types/ChatSession'
 
 describe('@klikeo/shared', () => {
   it('exports BUSINESS_CATEGORIES with at least 5 categories', () => {

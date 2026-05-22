@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.incommingMessagesFromMetaController = exports.whatsappVerificationController = void 0;
-const ChatSessionRepository_1 = require("@/repositories/ChatSessionRepository");
-const NegocioRepository_1 = require("@/repositories/NegocioRepository");
-const DeepSeekService_1 = require("@/services/DeepSeekService");
-const WhatsAppService_1 = require("@/services/WhatsAppService");
-const ProcessWhatsAppMessageUseCase_1 = require("@/use-cases/chat/ProcessWhatsAppMessageUseCase");
+const ChatSessionRepository_1 = require("../repositories/ChatSessionRepository");
+const NegocioRepository_1 = require("../repositories/NegocioRepository");
+const DeepSeekService_1 = require("../services/DeepSeekService");
+const WhatsAppService_1 = require("../services/WhatsAppService");
+const ProcessWhatsAppMessageUseCase_1 = require("../use-cases/chat/ProcessWhatsAppMessageUseCase");
 const whatsAppService = new WhatsAppService_1.WhatsAppService();
 const deepSeekService = new DeepSeekService_1.DeepSeekService();
 const negocioRepo = new NegocioRepository_1.NegocioRepository();

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { connectDB, disconnectDB } from '@/infra/db'
+import { connectDB, disconnectDB } from '../../src/infra/db'
 
 describe('Database Connection', () => {
   afterEach(async () => {

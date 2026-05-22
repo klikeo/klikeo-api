@@ -1,7 +1,7 @@
 import request from 'supertest'
 import mongoose from 'mongoose'
-import { createApp } from '@/infra/server'
-import { connectDB, disconnectDB } from '@/infra/db'
+import { createApp } from '../../src/infra/server'
+import { connectDB, disconnectDB } from '../../src/infra/db'
 
 const app = createApp()
 

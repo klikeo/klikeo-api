@@ -11,6 +11,8 @@ const db_1 = require("./db");
 // import { registerRoutes } from "./routes"
 const auth_routes_1 = __importDefault(require("../routes/auth.routes"));
 const negocios_routes_1 = __importDefault(require("../routes/negocios.routes"));
+const webhhoks_routes_1 = __importDefault(require("../routes/webhhoks.routes"));
+const admin_routes_1 = __importDefault(require("../routes/admin.routes"));
 const cors_1 = __importDefault(require("cors"));
 function createApp() {
     const app = (0, express_1.default)();
@@ -34,8 +36,8 @@ function createApp() {
     // registerRoutes(app)
     app.use("/api/auth", auth_routes_1.default);
     app.use("/api/negocios", negocios_routes_1.default);
-    // app.use('/api/webhooks', webhooksRouter)
-    // app.use('/api/admin', adminRouter)
+    app.use("/api/webhooks", webhhoks_routes_1.default);
+    app.use("/api/admin", admin_routes_1.default);
     app.get("/api/health", (_req, res) => {
         res.json({ status: "ok", timestamp: new Date().toISOString() });
     });
