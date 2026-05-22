@@ -1,14 +1,14 @@
 import { Router, Request, Response } from 'express'
 // import crypto from 'crypto'
 // import jwt from 'jsonwebtoken'
-import { RegisterUseCase } from '@/use-cases/auth/RegisterUseCase'
+// import { RegisterUseCase } from '@/use-cases/auth/RegisterUseCase'
 // import { LoginUseCase } from '@/use-cases/auth/LoginUseCase'
-import { UsuarioRepository } from '@/repositories/UsuarioRepository'
+// import { UsuarioRepository } from '@/repositories/UsuarioRepository'
 // import { authenticate } from '@/middlewares/authenticate'
 
-const router = Router()
-const usuarioRepo = new UsuarioRepository()
-const registerUseCase = new RegisterUseCase(usuarioRepo)
+// const router = Router()
+// const usuarioRepo = new UsuarioRepository()
+// const registerUseCase = new RegisterUseCase(usuarioRepo)
 // const loginUseCase = new LoginUseCase(usuarioRepo)
 
 // const COOKIE_OPTS = {
@@ -20,8 +20,8 @@ const registerUseCase = new RegisterUseCase(usuarioRepo)
 
 export const registerController = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = await registerUseCase.execute(req.body)
-    res.status(201).json({ user })
+    // const user = await registerUseCase.execute(req.body)
+    // res.status(201).json({ user })
   } catch (err) {
     if (err instanceof Error) {
       if (err.message === 'EMAIL_EXISTS') {
@@ -94,4 +94,4 @@ export const registerController = async (req: Request, res: Response): Promise<v
 //   }
 // })
 
-export default router
+// export default router
