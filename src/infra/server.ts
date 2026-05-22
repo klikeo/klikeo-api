@@ -30,7 +30,7 @@ export function createApp() {
   app.use(express.json())
   app.use(cookieParser())
 
-  registerRoutes(app)
+  // registerRoutes(app)
 
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() })
