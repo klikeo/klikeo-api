@@ -1,9 +1,9 @@
-import mongoose, { Schema, Document } from 'mongoose'
-import { ChatSessionDomain, MessageDomain } from '@/domain/ChatSession'
-import { IChatSessionRepository } from './interfaces/IChatSessionRepository'
+import mongoose, { Schema, Document } from "mongoose"
+import { ChatSessionDomain, MessageDomain } from "../domain/ChatSession"
+import { IChatSessionRepository } from "./interfaces/IChatSessionRepository"
 
 interface MessageDoc {
-  role: 'user' | 'assistant'
+  role: "user" | "assistant"
   content: string
   timestamp: Date
 }
@@ -11,7 +11,7 @@ interface MessageDoc {
 interface ChatSessionDoc extends Document {
   negocioId: mongoose.Types.ObjectId
   clientePhone: string
-  estado: 'active' | 'closed'
+  estado: "active" | "closed"
   historial: MessageDoc[]
   createdAt: Date
   updatedAt: Date
@@ -19,24 +19,27 @@ interface ChatSessionDoc extends Document {
 
 const MessageSchema = new Schema<MessageDoc>(
   {
-    role: { type: String, enum: ['user', 'assistant'], required: true },
+    role: { type: String, enum: ["user", "assistant"], required: true },
     content: { type: String, required: true },
     timestamp: { type: Date, default: Date.now },
   },
-  { _id: false }
+  { _id: false },
 )
 
 const ChatSessionSchema = new Schema<ChatSessionDoc>(
   {
-    negocioId: { type: Schema.Types.ObjectId, ref: 'Negocio', required: true },
+    negocioId: { type: Schema.Types.ObjectId, ref: "Negocio", required: true },
     clientePhone: { type: String, required: true },
-    estado: { type: String, enum: ['active', 'closed'], default: 'active' },
+    estado: { type: String, enum: ["active", "closed"], default: "active" },
     historial: [MessageSchema],
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 
-const ChatSessionModel = mongoose.model<ChatSessionDoc>('ChatSession', ChatSessionSchema)
+const ChatSessionModel = mongoose.model<ChatSessionDoc>(
+  "ChatSession",
+  ChatSessionSchema,
+)
 
 function toChatSessionDomain(doc: ChatSessionDoc): ChatSessionDomain {
   return {
@@ -60,7 +63,11 @@ export class ChatSessionRepository implements IChatSessionRepository {
     return doc ? toChatSessionDomain(doc) : null
   }
 
-  async findByNegocioId(negocioId: string, page = 1, limit = 20): Promise<{ data: ChatSessionDomain[]; total: number }> {
+  async findByNegocioId(
+    negocioId: string,
+    page = 1,
+    limit = 20,
+  ): Promise<{ data: ChatSessionDomain[]; total: number }> {
     const skip = (page - 1) * limit
     const [data, total] = await Promise.all([
       ChatSessionModel.find({ negocioId })
@@ -72,21 +79,31 @@ export class ChatSessionRepository implements IChatSessionRepository {
     return { data: data.map(toChatSessionDomain), total }
   }
 
-  async findOrCreate(negocioId: string, clientePhone: string): Promise<ChatSessionDomain> {
-    let doc = await ChatSessionModel.findOne({ negocioId, clientePhone, estado: 'active' })
+  async findOrCreate(
+    negocioId: string,
+    clientePhone: string,
+  ): Promise<ChatSessionDomain> {
+    let doc = await ChatSessionModel.findOne({
+      negocioId,
+      clientePhone,
+      estado: "active",
+    })
     if (!doc) {
       doc = await ChatSessionModel.create({ negocioId, clientePhone })
     }
     return toChatSessionDomain(doc)
   }
 
-  async addMessage(sessionId: string, message: Omit<MessageDomain, 'timestamp'>): Promise<ChatSessionDomain> {
+  async addMessage(
+    sessionId: string,
+    message: Omit<MessageDomain, "timestamp">,
+  ): Promise<ChatSessionDomain> {
     const doc = await ChatSessionModel.findByIdAndUpdate(
       sessionId,
       { $push: { historial: { ...message, timestamp: new Date() } } },
-      { new: true }
+      { new: true },
     )
-    if (!doc) throw new Error('ChatSession not found')
+    if (!doc) throw new Error("ChatSession not found")
     return toChatSessionDomain(doc)
   }
 
@@ -96,7 +113,10 @@ export class ChatSessionRepository implements IChatSessionRepository {
     return ChatSessionModel.countDocuments(query)
   }
 
-  async list(page = 1, limit = 20): Promise<{ data: ChatSessionDomain[]; total: number }> {
+  async list(
+    page = 1,
+    limit = 20,
+  ): Promise<{ data: ChatSessionDomain[]; total: number }> {
     const skip = (page - 1) * limit
     const [data, total] = await Promise.all([
       ChatSessionModel.find().sort({ updatedAt: -1 }).skip(skip).limit(limit),

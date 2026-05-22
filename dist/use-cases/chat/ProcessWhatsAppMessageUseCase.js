@@ -24,7 +24,7 @@ class ProcessWhatsAppMessageUseCase {
         const session = await this.chatSessionRepo.findOrCreate(negocio.id, clientePhone);
         // 3. Save the user's message to the session
         await this.chatSessionRepo.addMessage(session.id, {
-            role: 'user',
+            role: "user",
             content: messageBody,
         });
         // 4. Build the system prompt with training data
@@ -34,14 +34,14 @@ class ProcessWhatsAppMessageUseCase {
         // 5. Build the message history for DeepSeek (last 10 messages to avoid token limit)
         const history = session.historial.slice(-10);
         const messages = [
-            { role: 'system', content: systemPrompt },
+            { role: "system", content: systemPrompt },
             ...history.map((m) => ({ role: m.role, content: m.content })),
         ];
         // 6. Call DeepSeek
         const assistantReply = await this.deepSeekService.chat(messages);
         // 7. Save the assistant's response
         await this.chatSessionRepo.addMessage(session.id, {
-            role: 'assistant',
+            role: "assistant",
             content: assistantReply,
         });
         // 8. Send the response via WhatsApp

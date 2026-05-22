@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-import { IUsuarioRepository } from '@/repositories/interfaces/IUsuarioRepository'
+import { IUsuarioRepository } from '../../repositories/interfaces/IUsuarioRepository'
 
 export interface LoginInput {
   email: string

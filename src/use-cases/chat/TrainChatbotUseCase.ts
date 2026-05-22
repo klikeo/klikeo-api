@@ -1,4 +1,4 @@
-import { INegocioRepository } from '@/repositories/interfaces/INegocioRepository'
+import { INegocioRepository } from '../../repositories/interfaces/INegocioRepository'
 
 export class TrainChatbotUseCase {
   constructor(private readonly negocioRepo: INegocioRepository) {}

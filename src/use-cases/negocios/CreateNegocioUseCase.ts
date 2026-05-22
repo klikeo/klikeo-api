@@ -1,6 +1,9 @@
-import { BUSINESS_CATEGORIES } from '@/constants/categories'
-import { INegocioRepository, CreateNegocioData } from '@/repositories/interfaces/INegocioRepository'
-import { NegocioDomain } from '@/domain/Negocio'
+import { BUSINESS_CATEGORIES } from "../../constants/categories"
+import {
+  INegocioRepository,
+  CreateNegocioData,
+} from "../../repositories/interfaces/INegocioRepository"
+import { NegocioDomain } from "../../domain/Negocio"
 
 export interface CreateNegocioInput {
   name: string
@@ -16,20 +19,27 @@ export interface CreateNegocioInput {
 export class CreateNegocioUseCase {
   constructor(private readonly negocioRepo: INegocioRepository) {}
 
-  async execute(input: CreateNegocioInput, ownerId: string): Promise<NegocioDomain> {
+  async execute(
+    input: CreateNegocioInput,
+    ownerId: string,
+  ): Promise<NegocioDomain> {
     const { name, category, city, whatsappNumber } = input
 
     if (!name || name.length < 2) {
-      throw new Error('El nombre debe tener al menos 2 caracteres')
+      throw new Error("El nombre debe tener al menos 2 caracteres")
     }
     if (!city) {
-      throw new Error('La ciudad es requerida')
+      throw new Error("La ciudad es requerida")
     }
     if (!whatsappNumber) {
-      throw new Error('El número de WhatsApp es requerido')
+      throw new Error("El número de WhatsApp es requerido")
     }
-    if (!BUSINESS_CATEGORIES.includes(category as typeof BUSINESS_CATEGORIES[number])) {
-      throw new Error('Categoría inválida')
+    if (
+      !BUSINESS_CATEGORIES.includes(
+        category as (typeof BUSINESS_CATEGORIES)[number],
+      )
+    ) {
+      throw new Error("Categoría inválida")
     }
 
     const data: CreateNegocioData = { ...input, ownerId }

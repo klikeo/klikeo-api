@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose'
-import { UsuarioDomain } from '@/domain/Usuario'
+import { UsuarioDomain } from '../domain/Usuario'
 import { IUsuarioRepository, CreateUsuarioData } from './interfaces/IUsuarioRepository'
 
 interface UsuarioDoc extends Document {

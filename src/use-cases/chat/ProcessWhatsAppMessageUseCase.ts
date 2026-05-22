@@ -1,7 +1,10 @@
-import { INegocioRepository } from '@/repositories/interfaces/INegocioRepository'
-import { IChatSessionRepository } from '@/repositories/interfaces/IChatSessionRepository'
-import { IDeepSeekService, DeepSeekMessage } from '@/services/DeepSeekService'
-import { WhatsAppService } from '@/services/WhatsAppService'
+import { INegocioRepository } from "../../repositories/interfaces/INegocioRepository"
+import { IChatSessionRepository } from "../../repositories/interfaces/IChatSessionRepository"
+import {
+  IDeepSeekService,
+  DeepSeekMessage,
+} from "../../services/DeepSeekService"
+import { WhatsAppService } from "../../services/WhatsAppService"
 
 export interface ProcessMessageInput {
   clientePhone: string
@@ -23,16 +26,21 @@ export class ProcessWhatsAppMessageUseCase {
     // 1. Find the negocio by the WhatsApp phone number ID
     const negocio = await this.negocioRepo.findByWhatsappPhoneId(phoneNumberId)
     if (!negocio) {
-      console.warn(`[Chatbot] No negocio found for phoneNumberId: ${phoneNumberId}`)
+      console.warn(
+        `[Chatbot] No negocio found for phoneNumberId: ${phoneNumberId}`,
+      )
       return
     }
 
     // 2. Find or create the chat session
-    const session = await this.chatSessionRepo.findOrCreate(negocio.id, clientePhone)
+    const session = await this.chatSessionRepo.findOrCreate(
+      negocio.id,
+      clientePhone,
+    )
 
     // 3. Save the user's message to the session
     await this.chatSessionRepo.addMessage(session.id, {
-      role: 'user',
+      role: "user",
       content: messageBody,
     })
 
@@ -44,7 +52,7 @@ export class ProcessWhatsAppMessageUseCase {
     // 5. Build the message history for DeepSeek (last 10 messages to avoid token limit)
     const history = session.historial.slice(-10)
     const messages: DeepSeekMessage[] = [
-      { role: 'system', content: systemPrompt },
+      { role: "system", content: systemPrompt },
       ...history.map((m) => ({ role: m.role, content: m.content })),
     ]
 
@@ -53,7 +61,7 @@ export class ProcessWhatsAppMessageUseCase {
 
     // 7. Save the assistant's response
     await this.chatSessionRepo.addMessage(session.id, {
-      role: 'assistant',
+      role: "assistant",
       content: assistantReply,
     })
 

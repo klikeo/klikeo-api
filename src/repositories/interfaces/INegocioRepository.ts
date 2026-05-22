@@ -1,4 +1,4 @@
-import { NegocioDomain } from '@/domain/Negocio'
+import { NegocioDomain } from '../../domain/Negocio'
 
 export interface CreateNegocioData {
   name: string

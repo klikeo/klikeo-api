@@ -1,4 +1,4 @@
-import { UsuarioDomain } from '@/domain/Usuario'
+import { UsuarioDomain } from '../../domain/Usuario'
 
 export interface CreateUsuarioData {
   email: string

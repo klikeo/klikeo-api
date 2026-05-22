@@ -36,17 +36,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatSessionRepository = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const MessageSchema = new mongoose_1.Schema({
-    role: { type: String, enum: ['user', 'assistant'], required: true },
+    role: { type: String, enum: ["user", "assistant"], required: true },
     content: { type: String, required: true },
     timestamp: { type: Date, default: Date.now },
 }, { _id: false });
 const ChatSessionSchema = new mongoose_1.Schema({
-    negocioId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Negocio', required: true },
+    negocioId: { type: mongoose_1.Schema.Types.ObjectId, ref: "Negocio", required: true },
     clientePhone: { type: String, required: true },
-    estado: { type: String, enum: ['active', 'closed'], default: 'active' },
+    estado: { type: String, enum: ["active", "closed"], default: "active" },
     historial: [MessageSchema],
 }, { timestamps: true });
-const ChatSessionModel = mongoose_1.default.model('ChatSession', ChatSessionSchema);
+const ChatSessionModel = mongoose_1.default.model("ChatSession", ChatSessionSchema);
 function toChatSessionDomain(doc) {
     return {
         id: doc._id.toString(),
@@ -79,7 +79,11 @@ class ChatSessionRepository {
         return { data: data.map(toChatSessionDomain), total };
     }
     async findOrCreate(negocioId, clientePhone) {
-        let doc = await ChatSessionModel.findOne({ negocioId, clientePhone, estado: 'active' });
+        let doc = await ChatSessionModel.findOne({
+            negocioId,
+            clientePhone,
+            estado: "active",
+        });
         if (!doc) {
             doc = await ChatSessionModel.create({ negocioId, clientePhone });
         }
@@ -88,7 +92,7 @@ class ChatSessionRepository {
     async addMessage(sessionId, message) {
         const doc = await ChatSessionModel.findByIdAndUpdate(sessionId, { $push: { historial: { ...message, timestamp: new Date() } } }, { new: true });
         if (!doc)
-            throw new Error('ChatSession not found');
+            throw new Error("ChatSession not found");
         return toChatSessionDomain(doc);
     }
     async countByNegocioId(negocioId, since) {

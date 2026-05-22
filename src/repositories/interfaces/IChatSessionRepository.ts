@@ -1,4 +1,4 @@
-import { ChatSessionDomain, MessageDomain } from '@/domain/ChatSession'
+import { ChatSessionDomain, MessageDomain } from '../../domain/ChatSession'
 
 export interface CreateChatSessionData {
   negocioId: string

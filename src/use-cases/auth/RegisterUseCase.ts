@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import { IUsuarioRepository } from '@/repositories/interfaces/IUsuarioRepository'
+import { IUsuarioRepository } from '../../repositories/interfaces/IUsuarioRepository'
 
 export interface RegisterInput {
   email: string

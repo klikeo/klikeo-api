@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose'
-import { NegocioDomain } from '@/domain/Negocio'
+import { NegocioDomain } from '../domain/Negocio'
 import { INegocioRepository, CreateNegocioData, UpdateNegocioData, ListNegociosFilter, ListNegociosResult } from './interfaces/INegocioRepository'
 
 interface NegocioDoc extends Document {

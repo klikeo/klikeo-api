@@ -10,6 +10,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const db_1 = require("./db");
 // import { registerRoutes } from "./routes"
 const auth_routes_1 = __importDefault(require("../routes/auth.routes"));
+const negocios_routes_1 = __importDefault(require("../routes/negocios.routes"));
 const cors_1 = __importDefault(require("cors"));
 function createApp() {
     const app = (0, express_1.default)();
@@ -31,8 +32,8 @@ function createApp() {
     app.use(express_1.default.json());
     app.use((0, cookie_parser_1.default)());
     // registerRoutes(app)
-    app.use('/api/auth', auth_routes_1.default);
-    // app.use('/api/negocios', negociosRouter)
+    app.use("/api/auth", auth_routes_1.default);
+    app.use("/api/negocios", negocios_routes_1.default);
     // app.use('/api/webhooks', webhooksRouter)
     // app.use('/api/admin', adminRouter)
     app.get("/api/health", (_req, res) => {

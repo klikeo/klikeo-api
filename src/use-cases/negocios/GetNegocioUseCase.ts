@@ -1,5 +1,5 @@
-import { INegocioRepository } from '@/repositories/interfaces/INegocioRepository'
-import { NegocioDomain } from '@/domain/Negocio'
+import { INegocioRepository } from '../../repositories/interfaces/INegocioRepository'
+import { NegocioDomain } from '../../domain/Negocio'
 
 export class GetNegocioUseCase {
   constructor(private readonly negocioRepo: INegocioRepository) {}

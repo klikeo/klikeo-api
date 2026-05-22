@@ -1,4 +1,4 @@
-import { INegocioRepository, ListNegociosFilter, ListNegociosResult } from '@/repositories/interfaces/INegocioRepository'
+import { INegocioRepository, ListNegociosFilter, ListNegociosResult } from '../../repositories/interfaces/INegocioRepository'
 
 export class ListNegociosUseCase {
   constructor(private readonly negocioRepo: INegocioRepository) {}
