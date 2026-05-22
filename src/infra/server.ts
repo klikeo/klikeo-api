@@ -3,7 +3,7 @@ import express from "express"
 import cookieParser from "cookie-parser"
 import { connectDB } from "./db"
 import { registerRoutes } from "./routes"
-import authRouter from '../routes/auth.routes.ts'
+import authRouter from '../routes/auth.routes'
 import cors from 'cors';
 
 export function createApp() {
