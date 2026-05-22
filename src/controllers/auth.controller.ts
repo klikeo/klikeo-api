@@ -2,21 +2,21 @@ import { Router, Request, Response } from "express"
 // import crypto from 'crypto'
 // import jwt from 'jsonwebtoken'
 import { RegisterUseCase } from "../use-cases/auth/RegisterUseCase"
-// import { LoginUseCase } from '@/use-cases/auth/LoginUseCase'
+import { LoginUseCase } from '../use-cases/auth/LoginUseCase'
 import { UsuarioRepository } from "../repositories/UsuarioRepository"
 // import { authenticate } from '@/middlewares/authenticate'
 
 // const router = Router()
 const usuarioRepo = new UsuarioRepository()
 const registerUseCase = new RegisterUseCase(usuarioRepo)
-// const loginUseCase = new LoginUseCase(usuarioRepo)
+const loginUseCase = new LoginUseCase(usuarioRepo)
 
-// const COOKIE_OPTS = {
-//   httpOnly: true,
-//   secure: process.env.NODE_ENV === 'production',
-//   sameSite: 'lax' as const,
-//   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-// }
+const COOKIE_OPTS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+}
 
 export const registerController = async (
   req: Request,
@@ -38,19 +38,22 @@ export const registerController = async (
   }
 }
 
-// router.post('/login', async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     const result = await loginUseCase.execute(req.body)
-//     res.cookie('refreshToken', result.refreshToken, COOKIE_OPTS)
-//     res.json({ user: result.user, accessToken: result.accessToken })
-//   } catch (err) {
-//     if (err instanceof Error && err.message === 'INVALID_CREDENTIALS') {
-//       res.status(401).json({ error: 'Credenciales inválidas' })
-//       return
-//     }
-//     res.status(500).json({ error: 'Error interno' })
-//   }
-// })
+export const loginController = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const result = await loginUseCase.execute(req.body)
+    res.cookie("refreshToken", result.refreshToken, COOKIE_OPTS)
+    res.json({ user: result.user, accessToken: result.accessToken })
+  } catch (err) {
+    if (err instanceof Error && err.message === "INVALID_CREDENTIALS") {
+      res.status(401).json({ error: "Credenciales inválidas" })
+      return
+    }
+    res.status(500).json({ error: "Error interno" })
+  }
+}
 
 // router.post('/refresh', async (req: Request, res: Response): Promise<void> => {
 //   const rawToken = req.cookies?.refreshToken
