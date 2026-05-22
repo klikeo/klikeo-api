@@ -1,8 +1,8 @@
 import "dotenv/config"
 import express from "express"
 import cookieParser from "cookie-parser"
-import { connectDB } from "./db"
-import { registerRoutes } from "./routes"
+import { connectDB } from "./infra/db"
+import { registerRoutes } from "./infra/routes"
 import cors from 'cors';
 
 export function createApp() {
@@ -45,7 +45,7 @@ async function main() {
   app.listen(PORT, () => {
     console.log(`API running on http://localhost:${PORT}`)
   })
-  await connectDB()
+  // await connectDB()
 }
 
 main().catch((err) => {
