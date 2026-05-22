@@ -18,7 +18,7 @@ const COOKIE_OPTS = {
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 }
 
-router.post('/register', async (req: Request, res: Response): Promise<void> => {
+export const registerController = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await registerUseCase.execute(req.body)
     res.status(201).json({ user })
@@ -33,7 +33,7 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
     }
     res.status(500).json({ error: 'Error interno' })
   }
-})
+}
 
 router.post('/login', async (req: Request, res: Response): Promise<void> => {
   try {

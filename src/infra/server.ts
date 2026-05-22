@@ -3,6 +3,7 @@ import express from "express"
 import cookieParser from "cookie-parser"
 import { connectDB } from "./db"
 import { registerRoutes } from "./routes"
+import authRouter from '../routes/auth.routes'
 import cors from 'cors';
 
 export function createApp() {
@@ -31,6 +32,11 @@ export function createApp() {
   app.use(cookieParser())
 
   // registerRoutes(app)
+
+  app.use('/api/auth', authRouter)
+  // app.use('/api/negocios', negociosRouter)
+  // app.use('/api/webhooks', webhooksRouter)
+  // app.use('/api/admin', adminRouter)
 
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() })
