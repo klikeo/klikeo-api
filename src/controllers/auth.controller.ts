@@ -1,12 +1,10 @@
-import { Router, Request, Response } from "express"
+import { Request, Response } from "express"
 import crypto from "crypto"
 import jwt from "jsonwebtoken"
 import { RegisterUseCase } from "../use-cases/auth/RegisterUseCase"
 import { LoginUseCase } from "../use-cases/auth/LoginUseCase"
 import { UsuarioRepository } from "../repositories/UsuarioRepository"
-// import { authenticate } from '@/middlewares/authenticate'
 
-// const router = Router()
 const usuarioRepo = new UsuarioRepository()
 const registerUseCase = new RegisterUseCase(usuarioRepo)
 const loginUseCase = new LoginUseCase(usuarioRepo)
@@ -94,16 +92,17 @@ export const refreshController = async (
   }
 }
 
-// router.post('/logout', authenticate, async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     if (req.user) {
-//       await usuarioRepo.updateRefreshToken(req.user.userId, null)
-//     }
-//     res.clearCookie('refreshToken')
-//     res.json({ message: 'Sesión cerrada' })
-//   } catch {
-//     res.status(500).json({ error: 'Error interno' })
-//   }
-// })
-
-// export default router
+export const logoutController = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    if (req.user) {
+      await usuarioRepo.updateRefreshToken(req.user.userId, null)
+    }
+    res.clearCookie("refreshToken")
+    res.json({ message: "Sesión cerrada" })
+  } catch {
+    res.status(500).json({ error: "Error interno" })
+  }
+}
