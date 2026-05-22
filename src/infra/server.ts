@@ -3,8 +3,9 @@ import express from "express"
 import cookieParser from "cookie-parser"
 import { connectDB } from "./db"
 // import { registerRoutes } from "./routes"
-import authRouter from '../routes/auth.routes'
-import cors from 'cors';
+import authRouter from "../routes/auth.routes"
+import bussinesRouter from "../routes/negocios.routes"
+import cors from "cors"
 
 export function createApp() {
   const app = express()
@@ -33,8 +34,8 @@ export function createApp() {
 
   // registerRoutes(app)
 
-  app.use('/api/auth', authRouter)
-  // app.use('/api/negocios', negociosRouter)
+  app.use("/api/auth", authRouter)
+  app.use("/api/negocios", bussinesRouter)
   // app.use('/api/webhooks', webhooksRouter)
   // app.use('/api/admin', adminRouter)
 
