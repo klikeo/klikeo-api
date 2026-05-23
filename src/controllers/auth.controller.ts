@@ -11,7 +11,7 @@ const loginUseCase = new LoginUseCase(usuarioRepo)
 
 const COOKIE_OPTS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
+  secure: true,
   sameSite: "none" as const,
   domain: process.env.NODE_ENV === "production" ? ".klikeo.pro" : undefined, // ← NUEVO: dominio compartido
   path: "/",
