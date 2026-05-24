@@ -13,9 +13,9 @@ const COOKIE_OPTS = {
   httpOnly: true,
   secure: true,
   sameSite: "none" as const,
-  domain: process.env.NODE_ENV === "production" ? ".klikeo.pro" : undefined, // ← NUEVO: dominio compartido
+  domain: process.env.COOKIE_DOMAIN || ".klikeo.pro",
   path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 }
 
 export const registerController = async (
