@@ -12,12 +12,27 @@ const UsuarioRepository_1 = require("../repositories/UsuarioRepository");
 const usuarioRepo = new UsuarioRepository_1.UsuarioRepository();
 const registerUseCase = new RegisterUseCase_1.RegisterUseCase(usuarioRepo);
 const loginUseCase = new LoginUseCase_1.LoginUseCase(usuarioRepo);
-const COOKIE_OPTS = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-};
+function getCookieOpts() {
+    // prefer explicit env var; fall back to production domain only when not empty
+    const rawDomain = process.env.COOKIE_DOMAIN?.trim();
+    const domain = rawDomain && rawDomain.length > 0 ? rawDomain : (process.env.NODE_ENV === 'production' ? 'klikeo.pro' : undefined);
+    const secure = process.env.NODE_ENV === 'production';
+    const sameSite = secure ? "none" : "lax";
+    const opts = {
+        httpOnly: true,
+        secure,
+        sameSite,
+        path: "/",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+    if (domain) {
+        // basic validation: must not contain spaces or protocol
+        if (/^[A-Za-z0-9.-]+$/.test(domain)) {
+            opts.domain = domain;
+        }
+    }
+    return opts;
+}
 const registerController = async (req, res) => {
     try {
         const user = await registerUseCase.execute(req.body);
@@ -39,7 +54,15 @@ exports.registerController = registerController;
 const loginController = async (req, res) => {
     try {
         const result = await loginUseCase.execute(req.body);
-        res.cookie("refreshToken", result.refreshToken, COOKIE_OPTS);
+        const COOKIE_OPTS = getCookieOpts();
+        try {
+            res.cookie("refreshToken", result.refreshToken, COOKIE_OPTS);
+        }
+        catch (err) {
+            // preserve previous behavior but give more debug info in logs
+            console.error('Failed setting refresh cookie, opts=', COOKIE_OPTS, 'err=', err);
+            throw err;
+        }
         res.json({ user: result.user, accessToken: result.accessToken });
     }
     catch (err) {
@@ -47,7 +70,7 @@ const loginController = async (req, res) => {
             res.status(401).json({ error: "Credenciales inválidas" });
             return;
         }
-        res.status(500).json({ error: "Error interno" });
+        res.status(500).json({ message: "Error interno", error: err instanceof Error ? err.message : "Unknown error" });
     }
 };
 exports.loginController = loginController;
@@ -86,7 +109,9 @@ const logoutController = async (req, res) => {
         if (req.user) {
             await usuarioRepo.updateRefreshToken(req.user.userId, null);
         }
-        res.clearCookie("refreshToken");
+        // clear with same options to ensure cookie is removed in client
+        const COOKIE_OPTS = getCookieOpts();
+        res.clearCookie("refreshToken", COOKIE_OPTS);
         res.json({ message: "Sesión cerrada" });
     }
     catch {
