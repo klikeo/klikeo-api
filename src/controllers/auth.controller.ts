@@ -51,7 +51,7 @@ export const loginController = async (
       res.status(401).json({ error: "Credenciales inválidas" })
       return
     }
-    res.status(500).json({ error: "Error interno" })
+    res.status(500).json({ message: "Error interno", error: err instanceof Error ? err.message : "Unknown error" })
   }
 }
 
