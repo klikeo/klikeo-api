@@ -9,13 +9,30 @@ const usuarioRepo = new UsuarioRepository()
 const registerUseCase = new RegisterUseCase(usuarioRepo)
 const loginUseCase = new LoginUseCase(usuarioRepo)
 
-const COOKIE_OPTS = {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none" as const,
-  domain: process.env.COOKIE_DOMAIN || ".klikeo.pro",
-  path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000,
+function getCookieOpts() {
+  // prefer explicit env var; fall back to production domain only when not empty
+  const rawDomain = process.env.COOKIE_DOMAIN?.trim()
+  const domain = rawDomain && rawDomain.length > 0 ? rawDomain : (process.env.NODE_ENV === 'production' ? 'klikeo.pro' : undefined)
+
+  const secure = process.env.NODE_ENV === 'production'
+  const sameSite = secure ? ("none" as const) : ("lax" as const)
+
+  const opts: Record<string, any> = {
+    httpOnly: true,
+    secure,
+    sameSite,
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  }
+
+  if (domain) {
+    // basic validation: must not contain spaces or protocol
+    if (/^[A-Za-z0-9.-]+$/.test(domain)) {
+      opts.domain = domain
+    }
+  }
+
+  return opts
 }
 
 export const registerController = async (
@@ -44,7 +61,14 @@ export const loginController = async (
 ): Promise<void> => {
   try {
     const result = await loginUseCase.execute(req.body)
-    res.cookie("refreshToken", result.refreshToken, COOKIE_OPTS)
+    const COOKIE_OPTS = getCookieOpts()
+    try {
+      res.cookie("refreshToken", result.refreshToken, COOKIE_OPTS)
+    } catch (err) {
+      // preserve previous behavior but give more debug info in logs
+      console.error('Failed setting refresh cookie, opts=', COOKIE_OPTS, 'err=', err)
+      throw err
+    }
     res.json({ user: result.user, accessToken: result.accessToken })
   } catch (err) {
     if (err instanceof Error && err.message === "INVALID_CREDENTIALS") {
@@ -102,7 +126,9 @@ export const logoutController = async (
     if (req.user) {
       await usuarioRepo.updateRefreshToken(req.user.userId, null)
     }
-    res.clearCookie("refreshToken")
+    // clear with same options to ensure cookie is removed in client
+    const COOKIE_OPTS = getCookieOpts()
+    res.clearCookie("refreshToken", COOKIE_OPTS)
     res.json({ message: "Sesión cerrada" })
   } catch {
     res.status(500).json({ error: "Error interno" })
