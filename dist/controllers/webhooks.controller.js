@@ -26,6 +26,7 @@ exports.whatsappVerificationController = whatsappVerificationController;
 // POST /api/webhooks/whatsapp — incoming messages from Meta
 const incommingMessagesFromMetaController = (req, res) => {
     const signature = req.headers["x-hub-signature-256"];
+    console.log("WhatsApp webhook received", req.headers, req.body);
     // Always respond 200 immediately — Meta requires fast ACK
     const rawBody = JSON.stringify(req.body);
     if (signature &&
