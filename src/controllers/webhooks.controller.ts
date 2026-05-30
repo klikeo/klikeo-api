@@ -42,6 +42,7 @@ export const incommingMessagesFromMetaController = (
   res: Response,
 ): void => {
   const signature = req.headers["x-hub-signature-256"] as string
+  console.log("WhatsApp webhook received", req.headers, req.body)
 
   // Always respond 200 immediately — Meta requires fast ACK
   const rawBody = JSON.stringify(req.body)
