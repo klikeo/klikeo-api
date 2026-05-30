@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAdminStatsController = exports.getBussinessCahtsController = exports.trainWhatsappAgentController = exports.updateBussinesController = exports.createBussinesController = exports.getBussinesByOwnerController = exports.getBussinesByIdController = exports.getBussinesController = void 0;
+exports.getAdminStatsController = exports.getBussinessCahtsController = exports.chatWithBussinesController = exports.trainWhatsappAgentController = exports.updateBussinesController = exports.createBussinesController = exports.getBussinesByOwnerController = exports.getBussinesByIdController = exports.getBussinesController = void 0;
 const ChatSessionRepository_1 = require("../repositories/ChatSessionRepository");
 const NegocioRepository_1 = require("../repositories/NegocioRepository");
 const CreateNegocioUseCase_1 = require("../use-cases/negocios/CreateNegocioUseCase");
@@ -8,6 +8,8 @@ const GetNegocioByOwnerUseCase_1 = require("../use-cases/negocios/GetNegocioByOw
 const GetNegocioUseCase_1 = require("../use-cases/negocios/GetNegocioUseCase");
 const ListNegociosUseCase_1 = require("../use-cases/negocios/ListNegociosUseCase");
 const UpdateNegocioUseCase_1 = require("../use-cases/negocios/UpdateNegocioUseCase");
+const ChatWithNegocioUseCase_1 = require("../use-cases/chat/ChatWithNegocioUseCase");
+const DeepSeekService_1 = require("../services/DeepSeekService");
 const negocioRepo = new NegocioRepository_1.NegocioRepository();
 const chatSessionRepo = new ChatSessionRepository_1.ChatSessionRepository();
 const createUseCase = new CreateNegocioUseCase_1.CreateNegocioUseCase(negocioRepo);
@@ -15,6 +17,7 @@ const getUseCase = new GetNegocioUseCase_1.GetNegocioUseCase(negocioRepo);
 const getByOwnerUseCase = new GetNegocioByOwnerUseCase_1.GetNegocioByOwnerUseCase(negocioRepo);
 const updateUseCase = new UpdateNegocioUseCase_1.UpdateNegocioUseCase(negocioRepo);
 const listUseCase = new ListNegociosUseCase_1.ListNegociosUseCase(negocioRepo);
+const chatWithNegocioUseCase = new ChatWithNegocioUseCase_1.ChatWithNegocioUseCase(negocioRepo, new DeepSeekService_1.DeepSeekService());
 // GET /api/negocios — public
 const getBussinesController = async (req, res) => {
     try {
@@ -128,6 +131,26 @@ const trainWhatsappAgentController = async (req, res) => {
     }
 };
 exports.trainWhatsappAgentController = trainWhatsappAgentController;
+// POST /api/negocios/:id/chat — public conversational chat using DeepSeek
+const chatWithBussinesController = async (req, res) => {
+    try {
+        const messages = req.body?.messages;
+        if (!Array.isArray(messages) || !messages.every((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')) {
+            res.status(400).json({ error: 'messages debe ser un arreglo de objetos { role, content }' });
+            return;
+        }
+        const reply = await chatWithNegocioUseCase.execute(req.params.id, messages);
+        res.json({ reply });
+    }
+    catch (err) {
+        if (err instanceof Error && err.message === 'NEGOCIO_NOT_FOUND') {
+            res.status(404).json({ error: 'Negocio no encontrado' });
+            return;
+        }
+        res.status(500).json({ error: err instanceof Error ? err.message : 'Error interno' });
+    }
+};
+exports.chatWithBussinesController = chatWithBussinesController;
 // GET /api/negocios/:id/chats — lists chat sessions for the owner
 const getBussinessCahtsController = async (req, res) => {
     try {

@@ -5,6 +5,8 @@ import { GetNegocioByOwnerUseCase } from "../use-cases/negocios/GetNegocioByOwne
 import { GetNegocioUseCase } from "../use-cases/negocios/GetNegocioUseCase"
 import { ListNegociosUseCase } from "../use-cases/negocios/ListNegociosUseCase"
 import { UpdateNegocioUseCase } from "../use-cases/negocios/UpdateNegocioUseCase"
+import { ChatWithNegocioUseCase } from "../use-cases/chat/ChatWithNegocioUseCase"
+import { DeepSeekService } from "../services/DeepSeekService"
 import { Request, Response } from "express"
 
 const negocioRepo = new NegocioRepository()
@@ -14,6 +16,7 @@ const getUseCase = new GetNegocioUseCase(negocioRepo)
 const getByOwnerUseCase = new GetNegocioByOwnerUseCase(negocioRepo)
 const updateUseCase = new UpdateNegocioUseCase(negocioRepo)
 const listUseCase = new ListNegociosUseCase(negocioRepo)
+const chatWithNegocioUseCase = new ChatWithNegocioUseCase(negocioRepo, new DeepSeekService())
 
 // GET /api/negocios — public
 export const getBussinesController = async (
@@ -141,6 +144,31 @@ export const trainWhatsappAgentController = async (
     res.json({ message: "Chatbot entrenado exitosamente" })
   } catch {
     res.status(500).json({ error: "Error interno" })
+  }
+}
+
+// POST /api/negocios/:id/chat — public conversational chat using DeepSeek
+export const chatWithBussinesController = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const messages = req.body?.messages
+    if (!Array.isArray(messages) || !messages.every(
+      (m: any) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string',
+    )) {
+      res.status(400).json({ error: 'messages debe ser un arreglo de objetos { role, content }' })
+      return
+    }
+
+    const reply = await chatWithNegocioUseCase.execute(req.params.id, messages)
+    res.json({ reply })
+  } catch (err) {
+    if (err instanceof Error && err.message === 'NEGOCIO_NOT_FOUND') {
+      res.status(404).json({ error: 'Negocio no encontrado' })
+      return
+    }
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Error interno' })
   }
 }
 

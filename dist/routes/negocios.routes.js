@@ -9,6 +9,7 @@ route.get("/me", authenticate_1.authenticate, negocios_controller_1.getBussinesB
 route.get("/:id", negocios_controller_1.getBussinesByIdController);
 route.post("/", authenticate_1.authenticate, negocios_controller_1.createBussinesController);
 route.put("/:id", authenticate_1.authenticate, negocios_controller_1.updateBussinesController);
+route.post("/:id/chat", negocios_controller_1.chatWithBussinesController);
 route.post("/:id/chat/entrenar", authenticate_1.authenticate, negocios_controller_1.trainWhatsappAgentController);
 route.get("/:id/chats", authenticate_1.authenticate, negocios_controller_1.getBussinessCahtsController);
 route.get("/admin/stats", authenticate_1.authenticate, negocios_controller_1.getAdminStatsController);
