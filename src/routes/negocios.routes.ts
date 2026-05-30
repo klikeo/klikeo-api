@@ -3,6 +3,7 @@ import {
   createBussinesController,
   getAdminStatsController,
   getBussinesByIdController,
+  getBussinesByOwnerController,
   getBussinesController,
   getBussinessCahtsController,
   trainWhatsappAgentController,
@@ -12,6 +13,7 @@ import { authenticate } from "../middlewares/authenticate"
 
 const route = Router()
 route.get("/", getBussinesController)
+route.get("/me", authenticate, getBussinesByOwnerController)
 route.get("/:id", getBussinesByIdController)
 route.post("/", authenticate, createBussinesController)
 route.put("/:id", authenticate, updateBussinesController)

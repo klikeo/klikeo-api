@@ -5,6 +5,7 @@ const negocios_controller_1 = require("../controllers/negocios.controller");
 const authenticate_1 = require("../middlewares/authenticate");
 const route = (0, express_1.Router)();
 route.get("/", negocios_controller_1.getBussinesController);
+route.get("/me", authenticate_1.authenticate, negocios_controller_1.getBussinesByOwnerController);
 route.get("/:id", negocios_controller_1.getBussinesByIdController);
 route.post("/", authenticate_1.authenticate, negocios_controller_1.createBussinesController);
 route.put("/:id", authenticate_1.authenticate, negocios_controller_1.updateBussinesController);

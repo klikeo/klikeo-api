@@ -1,6 +1,7 @@
 import { ChatSessionRepository } from "../repositories/ChatSessionRepository"
 import { NegocioRepository } from "../repositories/NegocioRepository"
 import { CreateNegocioUseCase } from "../use-cases/negocios/CreateNegocioUseCase"
+import { GetNegocioByOwnerUseCase } from "../use-cases/negocios/GetNegocioByOwnerUseCase"
 import { GetNegocioUseCase } from "../use-cases/negocios/GetNegocioUseCase"
 import { ListNegociosUseCase } from "../use-cases/negocios/ListNegociosUseCase"
 import { UpdateNegocioUseCase } from "../use-cases/negocios/UpdateNegocioUseCase"
@@ -10,6 +11,7 @@ const negocioRepo = new NegocioRepository()
 const chatSessionRepo = new ChatSessionRepository()
 const createUseCase = new CreateNegocioUseCase(negocioRepo)
 const getUseCase = new GetNegocioUseCase(negocioRepo)
+const getByOwnerUseCase = new GetNegocioByOwnerUseCase(negocioRepo)
 const updateUseCase = new UpdateNegocioUseCase(negocioRepo)
 const listUseCase = new ListNegociosUseCase(negocioRepo)
 
@@ -44,6 +46,23 @@ export const getBussinesByIdController = async (
   } catch (err) {
     if (err instanceof Error && err.message === "NEGOCIO_NOT_FOUND") {
       res.status(404).json({ error: "Negocio no encontrado" })
+      return
+    }
+    res.status(500).json({ error: "Error interno" })
+  }
+}
+
+// GET /api/negocios/me — owner only
+export const getBussinesByOwnerController = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const negocio = await getByOwnerUseCase.execute(req.user!.userId)
+    res.json(negocio)
+  } catch (err) {
+    if (err instanceof Error && err.message === "NEGOCIO_NOT_FOUND") {
+      res.status(404).json({ error: "No tienes un negocio registrado" })
       return
     }
     res.status(500).json({ error: "Error interno" })

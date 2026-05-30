@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAdminStatsController = exports.getBussinessCahtsController = exports.trainWhatsappAgentController = exports.updateBussinesController = exports.createBussinesController = exports.getBussinesByIdController = exports.getBussinesController = void 0;
+exports.getAdminStatsController = exports.getBussinessCahtsController = exports.trainWhatsappAgentController = exports.updateBussinesController = exports.createBussinesController = exports.getBussinesByOwnerController = exports.getBussinesByIdController = exports.getBussinesController = void 0;
 const ChatSessionRepository_1 = require("../repositories/ChatSessionRepository");
 const NegocioRepository_1 = require("../repositories/NegocioRepository");
 const CreateNegocioUseCase_1 = require("../use-cases/negocios/CreateNegocioUseCase");
+const GetNegocioByOwnerUseCase_1 = require("../use-cases/negocios/GetNegocioByOwnerUseCase");
 const GetNegocioUseCase_1 = require("../use-cases/negocios/GetNegocioUseCase");
 const ListNegociosUseCase_1 = require("../use-cases/negocios/ListNegociosUseCase");
 const UpdateNegocioUseCase_1 = require("../use-cases/negocios/UpdateNegocioUseCase");
@@ -11,6 +12,7 @@ const negocioRepo = new NegocioRepository_1.NegocioRepository();
 const chatSessionRepo = new ChatSessionRepository_1.ChatSessionRepository();
 const createUseCase = new CreateNegocioUseCase_1.CreateNegocioUseCase(negocioRepo);
 const getUseCase = new GetNegocioUseCase_1.GetNegocioUseCase(negocioRepo);
+const getByOwnerUseCase = new GetNegocioByOwnerUseCase_1.GetNegocioByOwnerUseCase(negocioRepo);
 const updateUseCase = new UpdateNegocioUseCase_1.UpdateNegocioUseCase(negocioRepo);
 const listUseCase = new ListNegociosUseCase_1.ListNegociosUseCase(negocioRepo);
 // GET /api/negocios — public
@@ -46,6 +48,21 @@ const getBussinesByIdController = async (req, res) => {
     }
 };
 exports.getBussinesByIdController = getBussinesByIdController;
+// GET /api/negocios/me — owner only
+const getBussinesByOwnerController = async (req, res) => {
+    try {
+        const negocio = await getByOwnerUseCase.execute(req.user.userId);
+        res.json(negocio);
+    }
+    catch (err) {
+        if (err instanceof Error && err.message === "NEGOCIO_NOT_FOUND") {
+            res.status(404).json({ error: "No tienes un negocio registrado" });
+            return;
+        }
+        res.status(500).json({ error: "Error interno" });
+    }
+};
+exports.getBussinesByOwnerController = getBussinesByOwnerController;
 // POST /api/negocios — owner only
 const createBussinesController = async (req, res) => {
     try {
