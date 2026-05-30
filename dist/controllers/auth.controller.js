@@ -13,9 +13,11 @@ const usuarioRepo = new UsuarioRepository_1.UsuarioRepository();
 const registerUseCase = new RegisterUseCase_1.RegisterUseCase(usuarioRepo);
 const loginUseCase = new LoginUseCase_1.LoginUseCase(usuarioRepo);
 function getCookieOpts() {
-    // prefer explicit env var; fall back to production domain only when not empty
+    // Prefer an explicit COOKIE_DOMAIN because cookie domains must match the deployed host.
+    // Do not hardcode a fallback production domain here, since that breaks cookie persistence
+    // when the actual frontend/backend domains are different.
     const rawDomain = process.env.COOKIE_DOMAIN?.trim();
-    const domain = rawDomain && rawDomain.length > 0 ? rawDomain : (process.env.NODE_ENV === 'production' ? 'klikeo.pro' : undefined);
+    const domain = rawDomain && rawDomain.length > 0 ? rawDomain : undefined;
     const secure = process.env.NODE_ENV === 'production';
     const sameSite = secure ? "none" : "lax";
     const opts = {
