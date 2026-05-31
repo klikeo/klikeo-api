@@ -18,8 +18,8 @@ function getCookieOpts() {
 
   const opts: Record<string, any> = {
     httpOnly: true,
-    secure,
-    sameSite,
+    secure:secure,
+    sameSite:sameSite,
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   }

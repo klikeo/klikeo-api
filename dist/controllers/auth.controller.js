@@ -20,8 +20,8 @@ function getCookieOpts() {
     const sameSite = secure ? "none" : "lax";
     const opts = {
         httpOnly: true,
-        secure:secure,
-        sameSite:sameSite,
+        secure,
+        sameSite,
         path: "/",
         maxAge: 7 * 24 * 60 * 60 * 1000,
     };
