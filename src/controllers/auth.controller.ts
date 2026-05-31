@@ -12,7 +12,7 @@ const loginUseCase = new LoginUseCase(usuarioRepo)
 function getCookieOpts() {
   // prefer explicit env var; fall back to production domain only when not empty
   const rawDomain = process.env.COOKIE_DOMAIN?.trim()
-  const domain = rawDomain && rawDomain.length > 0 ? rawDomain : (process.env.NODE_ENV === 'production' ? 'klikeo.pro' : undefined)
+  const domain = rawDomain && rawDomain.length > 0 ? rawDomain : undefined
   const secure = process.env.NODE_ENV === 'production'
   const sameSite = secure ? ("none" as const) : ("lax" as const)
 
