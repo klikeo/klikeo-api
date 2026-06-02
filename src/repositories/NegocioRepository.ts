@@ -13,6 +13,7 @@ interface NegocioDoc extends Document {
   whatsappNumber: string
   whatsappPhoneId?: string
   logoUrl?: string
+  bannerUrl?: string
   ownerId: mongoose.Types.ObjectId
   trainingData?: string
   isActive: boolean
@@ -32,6 +33,7 @@ const NegocioSchema = new Schema<NegocioDoc>(
     whatsappNumber: { type: String, required: true },
     whatsappPhoneId: { type: String },
     logoUrl: String,
+    bannerUrl: String,
     ownerId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
     trainingData: String,
     isActive: { type: Boolean, default: true },
@@ -59,6 +61,7 @@ function toNegocioDomain(doc: NegocioDoc): NegocioDomain {
     whatsappNumber: doc.whatsappNumber,
     whatsappPhoneId: doc.whatsappPhoneId,
     logoUrl: doc.logoUrl,
+    bannerUrl: doc.bannerUrl,
     ownerId: doc.ownerId.toString(),
     trainingData: doc.trainingData,
     isActive: doc.isActive,

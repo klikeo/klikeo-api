@@ -10,6 +10,7 @@ export interface NegocioDomain {
   whatsappNumber: string
   whatsappPhoneId?: string
   logoUrl?: string
+  bannerUrl?: string
   ownerId: string
   trainingData?: string
   isActive: boolean

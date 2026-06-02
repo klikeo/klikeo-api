@@ -17,6 +17,8 @@ const mockNegocio: NegocioDomain = {
 function makeMockRepo(): INegocioRepository {
   return {
     findById: jest.fn().mockResolvedValue(null),
+    findBySlug: jest.fn().mockResolvedValue(null),
+    findByIdOrSlug: jest.fn().mockResolvedValue(null),
     findByOwnerId: jest.fn().mockResolvedValue(null),
     findByWhatsappPhoneId: jest.fn().mockResolvedValue(null),
     create: jest.fn().mockResolvedValue(mockNegocio),

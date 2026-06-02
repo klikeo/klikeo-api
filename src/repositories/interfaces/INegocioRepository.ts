@@ -10,6 +10,7 @@ export interface CreateNegocioData {
   phone?: string
   whatsappNumber: string
   logoUrl?: string
+  bannerUrl?: string
   ownerId: string
   trainingData?: string
 }
@@ -24,7 +25,8 @@ export interface UpdateNegocioData {
   phone?: string
   whatsappNumber?: string
   whatsappPhoneId?: string
-  logoUrl?: string
+  logoUrl?: string | null
+  bannerUrl?: string | null
   trainingData?: string
 }
 

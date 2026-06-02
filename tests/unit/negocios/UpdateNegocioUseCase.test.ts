@@ -19,6 +19,8 @@ function makeMockRepo(
 ): INegocioRepository {
   return {
     findById: jest.fn().mockResolvedValue(negocio),
+    findBySlug: jest.fn().mockResolvedValue(null),
+    findByIdOrSlug: jest.fn().mockResolvedValue(negocio),
     findByOwnerId: jest.fn().mockResolvedValue(null),
     findByWhatsappPhoneId: jest.fn().mockResolvedValue(null),
     create: jest.fn(),

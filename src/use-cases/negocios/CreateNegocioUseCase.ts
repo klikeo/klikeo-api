@@ -16,6 +16,7 @@ export interface CreateNegocioInput {
   phone?: string
   whatsappNumber: string
   logoUrl?: string
+  bannerUrl?: string
 }
 
 export class CreateNegocioUseCase {

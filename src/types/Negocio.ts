@@ -1,13 +1,15 @@
 export interface Negocio {
   _id: string
+  slug?: string
   name: string
   description?: string
   category: string
   address?: string
-  city: string
+  city?: string
   phone?: string
   whatsappNumber: string
   logoUrl?: string
+  bannerUrl?: string
   ownerId: string
   trainingData?: string
   isActive: boolean

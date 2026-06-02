@@ -158,3 +158,21 @@ describe('PUT /api/negocios/:id', () => {
     expect(res.status).toBe(401)
   })
 })
+
+describe('POST /api/negocios/:id/assets and DELETE /api/negocios/:id/logo', () => {
+  it('returns 400 when no files are attached', async () => {
+    const res = await request(app)
+      .post(`/api/negocios/${negocioId}/assets`)
+      .set('Authorization', `Bearer ${accessToken}`)
+    expect(res.status).toBe(400)
+    expect(res.body.error).toBe('Debes subir un logo o un banner')
+  })
+
+  it('allows deleting a logo even when none exists', async () => {
+    const res = await request(app)
+      .delete(`/api/negocios/${negocioId}/logo`)
+      .set('Authorization', `Bearer ${accessToken}`)
+    expect(res.status).toBe(200)
+    expect(res.body.id).toBe(negocioId)
+  })
+})

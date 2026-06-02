@@ -8,6 +8,7 @@ import { UpdateNegocioUseCase } from "../use-cases/negocios/UpdateNegocioUseCase
 import { ChatWithNegocioUseCase } from "../use-cases/chat/ChatWithNegocioUseCase"
 import { DeepSeekService } from "../services/DeepSeekService"
 import { Request, Response } from "express"
+import cloudinary from "../lib/cloudinary"
 
 const negocioRepo = new NegocioRepository()
 const chatSessionRepo = new ChatSessionRepository()
@@ -116,6 +117,116 @@ export const updateBussinesController = async (
       res.status(400).json({ error: err.message })
       return
     }
+    res.status(500).json({ error: "Error interno" })
+  }
+}
+
+const uploadToCloudinary = async (file: Express.Multer.File): Promise<string> => {
+  const dataUri = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`
+  const result = await cloudinary.uploader.upload(dataUri, {
+    resource_type: "auto",
+    folder: "klikeo/negocios",
+  })
+  return result.secure_url
+}
+
+export const uploadBusinessAssetsController = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const negocio = await negocioRepo.findByIdOrSlug(req.params.id)
+    if (!negocio) {
+      res.status(404).json({ error: "Negocio no encontrado" })
+      return
+    }
+    if (negocio.ownerId !== req.user!.userId) {
+      res.status(403).json({ error: "No tienes permiso" })
+      return
+    }
+
+    const files = (req as any).files as Record<string, Express.Multer.File[]> | undefined
+    const logoFile = files?.logo?.[0]
+    const bannerFile = files?.banner?.[0]
+
+    if (!logoFile && !bannerFile) {
+      res.status(400).json({ error: "Debes subir un logo o un banner" })
+      return
+    }
+
+    const updateData: Record<string, string | null> = {}
+    if (logoFile) {
+      updateData.logoUrl = await uploadToCloudinary(logoFile)
+    }
+    if (bannerFile) {
+      updateData.bannerUrl = await uploadToCloudinary(bannerFile)
+    }
+
+    const updatedNegocio = await negocioRepo.update(negocio.id, updateData)
+    if (!updatedNegocio) {
+      res.status(404).json({ error: "Negocio no encontrado" })
+      return
+    }
+
+    res.json(updatedNegocio)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: "Error interno" })
+  }
+}
+
+export const deleteBusinessLogoController = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const negocio = await negocioRepo.findByIdOrSlug(req.params.id)
+    if (!negocio) {
+      res.status(404).json({ error: "Negocio no encontrado" })
+      return
+    }
+    if (negocio.ownerId !== req.user!.userId) {
+      res.status(403).json({ error: "No tienes permiso" })
+      return
+    }
+
+    const updatedNegocio = await negocioRepo.update(negocio.id, { logoUrl: null })
+    if (!updatedNegocio) {
+      res.status(404).json({ error: "Negocio no encontrado" })
+      return
+    }
+
+    res.json(updatedNegocio)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: "Error interno" })
+  }
+}
+
+export const deleteBusinessBannerController = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const negocio = await negocioRepo.findByIdOrSlug(req.params.id)
+    if (!negocio) {
+      res.status(404).json({ error: "Negocio no encontrado" })
+      return
+    }
+    if (negocio.ownerId !== req.user!.userId) {
+      res.status(403).json({ error: "No tienes permiso" })
+      return
+    }
+
+    const updatedNegocio = await negocioRepo.update(negocio.id, { bannerUrl: null })
+    if (!updatedNegocio) {
+      res.status(404).json({ error: "Negocio no encontrado" })
+      return
+    }
+
+    res.json(updatedNegocio)
+  } catch (err) {
+    console.error(err)
     res.status(500).json({ error: "Error interno" })
   }
 }
