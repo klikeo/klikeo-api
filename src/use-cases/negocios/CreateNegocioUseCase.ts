@@ -4,8 +4,10 @@ import {
   CreateNegocioData,
 } from "../../repositories/interfaces/INegocioRepository"
 import { NegocioDomain } from "../../domain/Negocio"
+import { normalizeSlug } from "../../utils/slug"
 
 export interface CreateNegocioInput {
+  slug?: string
   name: string
   description?: string
   category: string
@@ -42,7 +44,12 @@ export class CreateNegocioUseCase {
       throw new Error("Categoría inválida")
     }
 
-    const data: CreateNegocioData = { ...input, ownerId }
+    const slug = normalizeSlug(input.slug ?? name)
+    if (!slug) {
+      throw new Error("Slug inválido")
+    }
+
+    const data: CreateNegocioData = { ...input, ownerId, slug }
     return this.negocioRepo.create(data)
   }
 }

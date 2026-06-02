@@ -4,8 +4,8 @@ import { NegocioDomain } from '../../domain/Negocio'
 export class GetNegocioUseCase {
   constructor(private readonly negocioRepo: INegocioRepository) {}
 
-  async execute(id: string): Promise<NegocioDomain> {
-    const negocio = await this.negocioRepo.findById(id)
+  async execute(identifier: string): Promise<NegocioDomain> {
+    const negocio = await this.negocioRepo.findByIdOrSlug(identifier)
     if (!negocio) {
       throw new Error('NEGOCIO_NOT_FOUND')
     }

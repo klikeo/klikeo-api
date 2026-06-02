@@ -13,8 +13,11 @@ function getCookieOpts() {
   // prefer explicit env var; fall back to production domain only when not empty
   const rawDomain = process.env.COOKIE_DOMAIN?.trim()
   const domain = rawDomain && rawDomain.length > 0 ? rawDomain : undefined
-  const secure = process.env.NODE_ENV === 'production'
-  const sameSite = secure ? ("none" as const) : ("lax" as const)
+  // If a domain is provided we must allow cross-site cookies (cookie shared
+  // between frontend and API subdomains). Force secure + SameSite=None when
+  // domain is set to ensure the browser will send the cookie across subdomains.
+  const secure = domain ? true : process.env.NODE_ENV === 'production'
+  const sameSite = domain ? ("none" as const) : (process.env.NODE_ENV === 'production' ? ("none" as const) : ("lax" as const))
 
   const opts: Record<string, any> = {
     httpOnly: true,

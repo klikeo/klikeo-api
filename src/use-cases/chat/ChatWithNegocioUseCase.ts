@@ -14,7 +14,7 @@ export class ChatWithNegocioUseCase {
     negocioId: string,
     conversation: Array<Pick<DeepSeekMessage, 'role' | 'content'>>,
   ): Promise<string> {
-    const negocio = await this.negocioRepo.findById(negocioId)
+    const negocio = await this.negocioRepo.findByIdOrSlug(negocioId)
     if (!negocio) {
       throw new Error('NEGOCIO_NOT_FOUND')
     }

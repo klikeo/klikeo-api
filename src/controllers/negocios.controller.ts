@@ -126,7 +126,7 @@ export const trainWhatsappAgentController = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const negocio = await negocioRepo.findById(req.params.id)
+    const negocio = await negocioRepo.findByIdOrSlug(req.params.id)
     if (!negocio) {
       res.status(404).json({ error: "Negocio no encontrado" })
       return
@@ -140,7 +140,7 @@ export const trainWhatsappAgentController = async (
       res.status(400).json({ error: "trainingData es requerido" })
       return
     }
-    await negocioRepo.update(req.params.id, { trainingData })
+    await negocioRepo.update(negocio.id, { trainingData })
     res.json({ message: "Chatbot entrenado exitosamente" })
   } catch {
     res.status(500).json({ error: "Error interno" })
@@ -178,7 +178,7 @@ export const getBussinessCahtsController = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const negocio = await negocioRepo.findById(req.params.id)
+    const negocio = await negocioRepo.findByIdOrSlug(req.params.id)
     if (!negocio) {
       res.status(404).json({ error: "Negocio no encontrado" })
       return
@@ -190,7 +190,7 @@ export const getBussinessCahtsController = async (
     const page = req.query.page ? parseInt(req.query.page as string) : 1
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 20
     const result = await chatSessionRepo.findByNegocioId(
-      req.params.id,
+      negocio.id,
       page,
       limit,
     )

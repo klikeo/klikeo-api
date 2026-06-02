@@ -3,6 +3,7 @@ import { NegocioDomain } from '../domain/Negocio'
 import { INegocioRepository, CreateNegocioData, UpdateNegocioData, ListNegociosFilter, ListNegociosResult } from './interfaces/INegocioRepository'
 
 interface NegocioDoc extends Document {
+  slug?: string
   name: string
   description?: string
   category: string
@@ -21,6 +22,7 @@ interface NegocioDoc extends Document {
 
 const NegocioSchema = new Schema<NegocioDoc>(
   {
+    slug: { type: String, unique: true, sparse: true, lowercase: true, trim: true },
     name: { type: String, required: true, minlength: 2 },
     description: { type: String, maxlength: 500 },
     category: { type: String, required: true },
@@ -40,11 +42,14 @@ const NegocioSchema = new Schema<NegocioDoc>(
 // Text index for search
 NegocioSchema.index({ name: 'text', description: 'text', city: 'text' })
 
-const NegocioModel = mongoose.model<NegocioDoc>('Negocio', NegocioSchema)
+export const NegocioModel =
+  (mongoose.models.Negocio as mongoose.Model<NegocioDoc>) ||
+  mongoose.model<NegocioDoc>('Negocio', NegocioSchema)
 
 function toNegocioDomain(doc: NegocioDoc): NegocioDomain {
   return {
     id: doc._id.toString(),
+    slug: doc.slug,
     name: doc.name,
     description: doc.description,
     category: doc.category,
@@ -68,6 +73,23 @@ export class NegocioRepository implements INegocioRepository {
     return doc ? toNegocioDomain(doc) : null
   }
 
+  async findBySlug(slug: string): Promise<NegocioDomain | null> {
+    const doc = await NegocioModel.findOne({ slug })
+    return doc ? toNegocioDomain(doc) : null
+  }
+
+  async findByIdOrSlug(identifier: string): Promise<NegocioDomain | null> {
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      const doc = await NegocioModel.findById(identifier)
+      if (doc) {
+        return toNegocioDomain(doc)
+      }
+    }
+
+    const doc = await NegocioModel.findOne({ slug: identifier })
+    return doc ? toNegocioDomain(doc) : null
+  }
+
   async findByOwnerId(ownerId: string): Promise<NegocioDomain | null> {
     const doc = await NegocioModel.findOne({ ownerId })
     return doc ? toNegocioDomain(doc) : null
@@ -79,13 +101,33 @@ export class NegocioRepository implements INegocioRepository {
   }
 
   async create(data: CreateNegocioData): Promise<NegocioDomain> {
-    const doc = await NegocioModel.create(data)
-    return toNegocioDomain(doc)
+    try {
+      const doc = await NegocioModel.create(data)
+      return toNegocioDomain(doc)
+    } catch (err: any) {
+      if (
+        err.code === 11000 &&
+        (err.keyPattern?.slug || err.keyValue?.slug)
+      ) {
+        throw new Error('SLUG_ALREADY_EXISTS')
+      }
+      throw err
+    }
   }
 
   async update(id: string, data: UpdateNegocioData): Promise<NegocioDomain | null> {
-    const doc = await NegocioModel.findByIdAndUpdate(id, data, { new: true })
-    return doc ? toNegocioDomain(doc) : null
+    try {
+      const doc = await NegocioModel.findByIdAndUpdate(id, data, { new: true })
+      return doc ? toNegocioDomain(doc) : null
+    } catch (err: any) {
+      if (
+        err.code === 11000 &&
+        (err.keyPattern?.slug || err.keyValue?.slug)
+      ) {
+        throw new Error('SLUG_ALREADY_EXISTS')
+      }
+      throw err
+    }
   }
 
   async list(filter: ListNegociosFilter): Promise<ListNegociosResult> {

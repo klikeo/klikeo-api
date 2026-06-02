@@ -46,7 +46,24 @@ describe('POST /api/negocios', () => {
     expect(res.status).toBe(201)
     expect(res.body.name).toBe('Panadería El Sol')
     expect(res.body.city).toBe('Bogotá')
+    expect(res.body.slug).toBeTruthy()
     negocioId = res.body.id
+  })
+
+  it('creates a negocio with a custom slug and resolves it by slug', async () => {
+    const customSlug = 'panaderia-el-sol-custom'
+    const res = await request(app)
+      .post('/api/negocios')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ ...testNegocio, name: 'Panadería El Sol Custom', slug: customSlug })
+
+    expect(res.status).toBe(201)
+    expect(res.body.slug).toBe(customSlug)
+
+    const getBySlug = await request(app).get(`/api/negocios/${customSlug}`)
+    expect(getBySlug.status).toBe(200)
+    expect(getBySlug.body.slug).toBe(customSlug)
+    expect(getBySlug.body.name).toBe('Panadería El Sol Custom')
   })
 
   it('returns 401 without token', async () => {

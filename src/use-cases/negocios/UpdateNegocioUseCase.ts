@@ -4,16 +4,24 @@ import {
   UpdateNegocioData,
 } from "../../repositories/interfaces/INegocioRepository"
 import { NegocioDomain } from "../../domain/Negocio"
+import { normalizeSlug } from "../../utils/slug"
 
 export class UpdateNegocioUseCase {
   constructor(private readonly negocioRepo: INegocioRepository) {}
 
   async execute(
-    id: string,
+    identifier: string,
     data: UpdateNegocioData,
     requestingOwnerId: string,
   ): Promise<NegocioDomain> {
-    const negocio = await this.negocioRepo.findById(id)
+    if (data.slug !== undefined) {
+      data.slug = normalizeSlug(data.slug)
+      if (!data.slug) {
+        throw new Error("Slug inválido")
+      }
+    }
+
+    const negocio = await this.negocioRepo.findByIdOrSlug(identifier)
     if (!negocio) {
       throw new Error("NEGOCIO_NOT_FOUND")
     }
@@ -29,7 +37,7 @@ export class UpdateNegocioUseCase {
       throw new Error("Categoría inválida")
     }
 
-    const updated = await this.negocioRepo.update(id, data)
+    const updated = await this.negocioRepo.update(negocio.id, data)
     return updated!
   }
 }

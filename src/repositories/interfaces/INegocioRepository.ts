@@ -1,6 +1,7 @@
 import { NegocioDomain } from '../../domain/Negocio'
 
 export interface CreateNegocioData {
+  slug?: string
   name: string
   description?: string
   category: string
@@ -14,6 +15,7 @@ export interface CreateNegocioData {
 }
 
 export interface UpdateNegocioData {
+  slug?: string
   name?: string
   description?: string
   category?: string
@@ -43,6 +45,8 @@ export interface ListNegociosResult {
 
 export interface INegocioRepository {
   findById(id: string): Promise<NegocioDomain | null>
+  findBySlug(slug: string): Promise<NegocioDomain | null>
+  findByIdOrSlug(identifier: string): Promise<NegocioDomain | null>
   findByOwnerId(ownerId: string): Promise<NegocioDomain | null>
   findByWhatsappPhoneId(phoneNumberId: string): Promise<NegocioDomain | null>
   create(data: CreateNegocioData): Promise<NegocioDomain>
