@@ -8,6 +8,7 @@ import { UpdateNegocioUseCase } from "../use-cases/negocios/UpdateNegocioUseCase
 import { ChatWithNegocioUseCase } from "../use-cases/chat/ChatWithNegocioUseCase"
 import { DeepSeekService } from "../services/DeepSeekService"
 import { Request, Response } from "express"
+import { Readable } from "stream"
 import cloudinary from "../lib/cloudinary"
 
 const negocioRepo = new NegocioRepository()
@@ -122,12 +123,25 @@ export const updateBussinesController = async (
 }
 
 const uploadToCloudinary = async (file: Express.Multer.File): Promise<string> => {
-  const dataUri = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`
-  const result = await cloudinary.uploader.upload(dataUri, {
-    resource_type: "auto",
-    folder: "klikeo/negocios",
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: "auto",
+        folder: "klikeo/negocios",
+      },
+      (error, result) => {
+        if (error) {
+          return reject(error)
+        }
+        if (!result?.secure_url) {
+          return reject(new Error("Cloudinary upload no devolvió URL segura"))
+        }
+        resolve(result.secure_url)
+      },
+    )
+
+    Readable.from(file.buffer).pipe(uploadStream)
   })
-  return result.secure_url
 }
 
 export const uploadBusinessAssetsController = async (
@@ -170,8 +184,9 @@ export const uploadBusinessAssetsController = async (
 
     res.json(updatedNegocio)
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: "Error interno" })
+    console.error("uploadBusinessAssetsController error:", err)
+    const message = err instanceof Error ? err.message : "Error interno"
+    res.status(500).json({ error: message })
   }
 }
 
