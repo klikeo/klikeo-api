@@ -1,10 +1,10 @@
 import { Router } from "express"
-import multer from "multer"
+// import multer from "multer"
 import {
   createBussinesController,
-  deleteBusinessBannerController,
-  deleteBusinessLogoController,
-  getAdminStatsController,
+  // deleteBusinessBannerController,
+  // deleteBusinessLogoController,
+  // getAdminStatsController,
   getBussinesByIdController,
   getBussinesByOwnerController,
   getBussinesController,
@@ -16,11 +16,11 @@ import {
 } from "../controllers/negocios.controller"
 import { authenticate } from "../middlewares/authenticate"
 
-const upload = multer({ storage: multer.memoryStorage() })
+// const upload = multer({ storage: multer.memoryStorage() })
 const route = Router()
 
 route.get("/", getBussinesController)
-route.get("/admin/stats", authenticate, getAdminStatsController)
+// route.get("/admin/stats", authenticate, getAdminStatsController)
 route.get("/me", authenticate, getBussinesByOwnerController)
 // route.post(
 //   "/:id/assets",
@@ -31,8 +31,8 @@ route.get("/me", authenticate, getBussinesByOwnerController)
 //   ]),
 //   uploadBusinessAssetsController,
 // )
-route.delete("/:id/logo", authenticate, deleteBusinessLogoController)
-route.delete("/:id/banner", authenticate, deleteBusinessBannerController)
+// route.delete("/:id/logo", authenticate, deleteBusinessLogoController)
+// route.delete("/:id/banner", authenticate, deleteBusinessBannerController)
 route.get("/:id", getBussinesByIdController)
 route.post("/", authenticate, createBussinesController)
 route.put("/:id", authenticate, updateBussinesController)
