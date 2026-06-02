@@ -186,7 +186,7 @@ export const uploadBusinessAssetsController = async (
   } catch (err) {
     console.error("uploadBusinessAssetsController error:", err)
     const message = err instanceof Error ? err.message : "Error interno"
-    res.status(500).json({ error: message })
+    res.status(500).json({ message: message, error: err })
   }
 }
 
