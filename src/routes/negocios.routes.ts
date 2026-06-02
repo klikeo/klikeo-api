@@ -11,7 +11,7 @@ import {
   getBussinessCahtsController,
   trainWhatsappAgentController,
   updateBussinesController,
-  uploadBusinessAssetsController,
+  // uploadBusinessAssetsController,
   chatWithBussinesController,
 } from "../controllers/negocios.controller"
 import { authenticate } from "../middlewares/authenticate"
@@ -22,15 +22,15 @@ const route = Router()
 route.get("/", getBussinesController)
 route.get("/admin/stats", authenticate, getAdminStatsController)
 route.get("/me", authenticate, getBussinesByOwnerController)
-route.post(
-  "/:id/assets",
-  authenticate,
-  upload.fields([
-    { name: "logo", maxCount: 1 },
-    { name: "banner", maxCount: 1 },
-  ]),
-  uploadBusinessAssetsController,
-)
+// route.post(
+//   "/:id/assets",
+//   authenticate,
+//   upload.fields([
+//     { name: "logo", maxCount: 1 },
+//     { name: "banner", maxCount: 1 },
+//   ]),
+//   uploadBusinessAssetsController,
+// )
 route.delete("/:id/logo", authenticate, deleteBusinessLogoController)
 route.delete("/:id/banner", authenticate, deleteBusinessBannerController)
 route.get("/:id", getBussinesByIdController)
